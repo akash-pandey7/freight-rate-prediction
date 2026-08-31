@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+Lib/
+Include/
+Scripts/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# VS Code / IDEs
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Data and Machine Learning Outputs (Project Specific)
+# Uncomment these if you want to keep data out of version control
+data/
+# *.csv
