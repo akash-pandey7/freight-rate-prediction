@@ -40,9 +40,9 @@ train = prepare_features(train)
 # This ensures that the model is trained on past data and validated on future data.
 assert train['date'].is_monotonic_increasing, "train-test.csv is not date-sorted — sort before splitting"
 cutoff = int(len(train) * 0.8)
-fit_df, val_df = train.iloc[:cutoff], train.iloc[cutoff:]
+fit_df, train_val_df = train.iloc[:cutoff], train.iloc[cutoff:]
 print(f"Fit: {fit_df.min()['date']} -> {fit_df.max()['date']}, {len(fit_df)} rows")
-print(f"Validation: {val_df.min()['date']} -> {val_df.max()['date']}, {len(val_df)} rows")
+print(f"Validation: {train_val_df.min()['date']} -> {train_val_df.max()['date']}, {len(train_val_df)} rows")
 
 # Standardize numerical features and one-hot encode categorical features
 preprocessor = ColumnTransformer(
@@ -58,12 +58,12 @@ model = Pipeline(steps=[
 
 # 4. Fit model on 80% of the train-test data, validate on the remaining 20%
 model.fit(fit_df[FEATURE_COLS], fit_df['posted_rate'])
-val_preds = model.predict(val_df[FEATURE_COLS])
+train_val_preds = model.predict(train_val_df[FEATURE_COLS])
 
 metrics = {
-    'mae' : mean_absolute_error(val_df['posted_rate'], val_preds),
-    'mape' : mean_absolute_percentage_error(val_df['posted_rate'], val_preds),
-    'r2' : r2_score(val_df['posted_rate'], val_preds)
+    'mae' : mean_absolute_error(train_val_df['posted_rate'], train_val_preds),
+    'mape' : mean_absolute_percentage_error(train_val_df['posted_rate'], train_val_preds),
+    'r2' : r2_score(train_val_df['posted_rate'], train_val_preds)
 }
 print("Validation Metrics:", metrics)
 Path('artifacts').mkdir(exist_ok=True)
