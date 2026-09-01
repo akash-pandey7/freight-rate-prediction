@@ -26,3 +26,5 @@ Thumbs.db
 # Uncomment these if you want to keep data out of version control
 data/
 # *.csv
+artifacts/
+scorer_results/
