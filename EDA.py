@@ -73,6 +73,13 @@ def main():
     print("load_id format sample:", template["load_id"].iloc[0])
     print("Columns in december_chart_inputs:", dec.columns.tolist())
     print("Do template and validation.csv load_ids match exactly : ", set(template["load_id"]) == set(val["load_id"]))
+    
+    print("\n" + "=" * 70)
+    print("WEIGHT SIGN CHECK")
+    print("=" * 70)
+    print("Rows with weight <= 0 (train):", (train["weight"] <= 0).sum())
+    print("Rows with weight <= 0 (validation):", (val["weight"] <= 0).sum())
+    print(train[train["weight"] <= 0][["load_id", "weight", "distance", "posted_rate"]].head())
 
 if __name__ == "__main__":
     main()
