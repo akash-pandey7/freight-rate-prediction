@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
@@ -70,6 +72,32 @@ print("Validation Metrics:", metrics)
 Path('artifacts').mkdir(exist_ok=True)
 with open('artifacts/validation_metrics.txt', 'w') as f:
     json.dump(metrics, f)
+
+plt.figure(figsize=(8, 8))
+
+# Plot actual vs. predicted values
+sns.scatterplot(
+    x=train_val_df['posted_rate'], 
+    y=train_val_preds, 
+    alpha=0.4, 
+    color='#1f77b4',
+    edgecolor=None
+)
+
+# Add a reference line for perfect predictions (y = x)
+min_val = min(train_val_df['posted_rate'].min(), train_val_preds.min())
+max_val = max(train_val_df['posted_rate'].max(), train_val_preds.max())
+plt.plot([min_val, max_val], [min_val, max_val], color='red', linestyle='--', linewidth=2)
+
+# Formatting
+plt.title('Actual vs. Predicted Freight Rates', fontsize=14, pad=15)
+plt.xlabel('Actual Posted Rate ($)', fontsize=12)
+plt.ylabel('Predicted Rate ($)', fontsize=12)
+plt.grid(True, linestyle=':', alpha=0.6)
+
+# Save the plot for your report
+plt.savefig('artifacts/actual_vs_predicted.png', dpi=300, bbox_inches='tight')
+plt.show()
 
 # 5. Refit on full train-test data for final model
 model.fit(train[FEATURE_COLS], train['posted_rate']) 
