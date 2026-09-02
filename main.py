@@ -26,6 +26,7 @@ def prepare_features(df):
     df['month'] = df['date'].dt.month
     df['dayofweek'] = df['date'].dt.dayofweek
     df['day'] = df['date'].dt.day
+    df['weight'] = df['weight'].abs()
     return df
 
 FEATURE_COLS = ['pickup', 'delivery', 'distance', 'equipment', 'weight', 'month', 'dayofweek', 'day']
