@@ -79,10 +79,10 @@ This produces `scorer_results/candidate_december.png`, included in the report.
   keeps one consistent feature set across validation and December.
 - **Model**: `RandomForestRegressor` in a `scikit-learn` pipeline (`StandardScaler` +
   `OneHotEncoder` for `pickup`/`delivery`/`equipment`).
-- **Results** (holdout) : MAE $171.79, MAPE 7.65%, R-Squared 0.79.
+- **Results** (holdout) : MAE $173.72, MAPE 7.7%, R-Squared 0.79.
 
 ## Notes
 
-- `The December 1st Spike` The spike is caused by a genuine outlier in the training data - a Lexington-origin load on June 1 priced at $3,631 (vs. the typical $750–950 for similar loads) - which the model generalizes from since it shares the same pickup city, distance, and weight profile, producing a inflated Dec 1-2 prediction before settling into its normal $842-852 range for the rest of the month.
+- `The December 1st Spike` The spike is caused by a genuine outlier in the training data - a Lexington-origin load on June 1 priced at $3,631 (vs. the typical $750–950 for similar loads) - which the model generalizes from since it shares the same pickup city, distance, and weight profile, producing a inflated Dec 1-2 prediction before settling into its normal $840-850 range for the rest of the month.
 - `market_index`/`quote_signal` were checked for leakage (not just weak correlation)
   before being dropped - see `EDA.py` output.
