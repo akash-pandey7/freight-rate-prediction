@@ -21,10 +21,3 @@ Scripts/
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Data and Machine Learning Outputs (Project Specific)
-# Uncomment these if you want to keep data out of version control
-data/
-# *.csv
-artifacts/
-scorer_results/
