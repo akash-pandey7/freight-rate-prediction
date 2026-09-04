@@ -7,8 +7,8 @@ import seaborn as sns
 from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, TargetEncoder
-from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.preprocessing import OneHotEncoder, TargetEncoder, StandardScaler
+from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, r2_score
 
 DATA_DIR = Path('data')
@@ -54,6 +54,12 @@ kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
 # Standardize numerical features and one-hot encode categorical features
 preprocessor = ColumnTransformer(
+    
+    # Uncomment the following lines to use StandardScaler for numerical features and OneHotEncoder for categorical features and comment out the other transformers if you want to use that approach instead of target encoding.
+    # transformers=[
+    #     ('num', StandardScaler(), num_cols),
+    #     ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), cat_cols)
+    # ]
     transformers=[
         ('num', "passthrough", num_cols),
         ('te', TargetEncoder(target_type='continuous', cv=kf), te_cols),
@@ -62,6 +68,8 @@ preprocessor = ColumnTransformer(
 # Define the model pipeline with preprocessing and a Random Forest regressor
 model = Pipeline(steps=[
     ('preprocessor', preprocessor),
+    # Uncomment the following line to use RandomForestRegressor instead of HistGradientBoostingRegressor if you want to use that model instead and comment out the other regressor.
+    # ("regressor", RandomForestRegressor(n_estimators=50, random_state=42, n_jobs=-1)),
     ('regressor', HistGradientBoostingRegressor(
         max_iter=500, max_depth=8, learning_rate=0.05, early_stopping=True, random_state=42, l2_regularization=0.1,
     ))
