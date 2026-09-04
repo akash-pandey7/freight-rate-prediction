@@ -4,10 +4,11 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import OneHotEncoder, TargetEncoder
+from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, r2_score
 
 DATA_DIR = Path('data')
@@ -34,6 +35,8 @@ def prepare_features(df):
 FEATURE_COLS = ['pickup', 'delivery', 'distance', 'equipment', 'weight', 'month', 'dayofweek', 'day']
 cat_cols = ['pickup', 'delivery', 'equipment'] # Categorical columns to be one-hot encoded
 num_cols = ['distance', 'weight', 'month', 'dayofweek', 'day'] # Numerical columns to be standardized
+te_cols = ["pickup", "delivery"]
+ohe_cols = ["equipment"]
 
 train = prepare_features(train)
 
@@ -47,16 +50,21 @@ fit_df, train_val_df = train.iloc[:cutoff], train.iloc[cutoff:]
 print(f"Fit: {fit_df.min()['date']} -> {fit_df.max()['date']}, {len(fit_df)} rows")
 print(f"Validation: {train_val_df.min()['date']} -> {train_val_df.max()['date']}, {len(train_val_df)} rows")
 
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
 # Standardize numerical features and one-hot encode categorical features
 preprocessor = ColumnTransformer(
     transformers=[
-        ('num', StandardScaler(), num_cols),
-        ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), cat_cols)
+        ('num', "passthrough", num_cols),
+        ('te', TargetEncoder(target_type='continuous', cv=kf), te_cols),
+        ('ohe', OneHotEncoder(handle_unknown='ignore', sparse_output=False), ohe_cols)
     ])
 # Define the model pipeline with preprocessing and a Random Forest regressor
 model = Pipeline(steps=[
     ('preprocessor', preprocessor),
-    ('regressor', RandomForestRegressor(n_estimators=50, random_state=42, n_jobs=-1))
+    ('regressor', HistGradientBoostingRegressor(
+        max_iter=500, max_depth=8, learning_rate=0.05, early_stopping=True, random_state=42, l2_regularization=0.1,
+    ))
 ])
 
 # 4. Fit model on 80% of the train-test data, validate on the remaining 20%
